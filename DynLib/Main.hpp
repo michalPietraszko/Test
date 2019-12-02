@@ -15,8 +15,8 @@ namespace lib
 	class API Event
 	{
 	public:
-		std::string toString() const { std::stringstream ss; ss<<"example"; return ss.str(); }
-		const char* getName() const { return "example"; }
+		std::string toString() const { std::stringstream ss; ss<<"example str"; return ss.str(); }
+		const char* getName() const { return "example char"; }
 	};
 
 	class API Layer
@@ -28,19 +28,35 @@ namespace lib
 	class API Application
 	{
 	public:
+		Application() = default;
+		Application(const Application&) = delete;
+		Application(Application&&) = default;
+		Application& operator=(Application&&) = default;
+		Application& operator=(const Application&) = delete;
+		~Application() = default;
+			   
 		template<typename T>
 		void pushLayer()
 		{
-			vec.emplace_back(new T);
+			vec.push_back(std::make_unique<T>());
 		}
 
 		void run()
-		{
-			vec.begin()->onEvent();
+		{	
+			bool doneOnce{ false };
+			while (true) 
+			{
+				if (!doneOnce) 
+				{
+					Event e{};
+					(*vec.begin())->onEvent(e);
+					doneOnce = true;
+				}
+			}
 		}
 
 		std::vector<std::unique_ptr<Layer>> vec;
 	};
 
-    Application* createApplication();
+    Application* createApplication(); // define in client
 }// namespace

@@ -1,22 +1,18 @@
 --pramake.lua
 
-workspace "Luna"
+workspace "Test"
     architecture "x64"
 
     configurations
     {
         "Debug",
-        "Release",
-        "Dist"
+        "Release"
     }
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
--- Include directories relative to root folder (solution directory)
-IncludeDir = {}
---IncludeDir["GLFW"] = "Luna/vendor/GLFW/include"
-
 --include "Luna/vendor/GLFW"
+startproject "Client"
 
 project "DynLib"
     location "DynLib"
@@ -31,7 +27,7 @@ project "DynLib"
 
     files
     {
-        "%{prj.name}/**.h",
+        "%{prj.name}/**.hpp",
         "%{prj.name}/**.cpp"
     }
 
@@ -56,16 +52,10 @@ project "DynLib"
         }
     
     filter "configurations:Debug"
-        defines "LN_DEBUG"
         symbols "On"
 
     filter "configurations:Release"
-        defines "LN_RELEASE"
-        symbols "On"
-
-    filter "configurations:Dist"
-        defines "LN_DIST"
-        symbols "On"
+        symbols "Off"
 
 project "Client"
     location "Client"
@@ -77,13 +67,13 @@ project "Client"
 
     files
     {
-        "%{prj.name}/**.h",
+        "%{prj.name}/**.hpp",
         "%{prj.name}/**.cpp"
     }
 
     includedirs
     {
-        "DynLib/src"
+        "DynLib/"
     }
 
     links
@@ -102,13 +92,8 @@ project "Client"
         }
 
     filter "configurations:Debug"
-        defines "LN_DEBUG"
         symbols "On"
 
     filter "configurations:Release"
-        defines "LN_RELEASE"
-        symbols "On"
+        symbols "Off"
 
-    filter "configurations:Dist"
-        defines "LN_DIST"
-        symbols "On"
