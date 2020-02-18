@@ -1,99 +1,34 @@
---pramake.lua
 
-workspace "Test"
-    architecture "x64"
+workspace "Example"
+architecture "x64"
+configurations { "Debug", "Release" }
+location "build"
+toolset "clang"
 
-    configurations
-    {
-        "Debug",
-        "Release"
-    }
+project "Test"
+location "build"
+kind "ConsoleApp"
+language "C++"
+targetdir "bin/%{cfg.buildcfg}"
+cppdialect "C++17"
 
-outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+files 
+{
+    "inc/**.hpp", 
+    "src/**.cpp"
+}
 
---include "Luna/vendor/GLFW"
-startproject "Client"
+includedirs 
+{
+    "inc",
+    "src"
+}
 
-project "DynLib"
-    location "DynLib"
-    kind "SharedLib"
-    language "C++"
+filter "configurations:Debug"
+    defines {"DEBUG"}
+    symbols "On"
 
-    targetdir("bin/" .. outputdir .. "/%{prj.name}")
-    objdir("bin-int/" .. outputdir .. "/%{prj.name}")
-
---    pchheader "lnpch.h"
---    pchsource "Luna/src/lnpch.cpp"
-
-    files
-    {
-        "%{prj.name}/**.hpp",
-        "%{prj.name}/**.cpp"
-    }
-
-    includedirs
-    {
-        "%{prj.name}/"
-    } 
-
-    filter "system:windows"
-        cppdialect "C++17"
-        staticruntime "On"
-        systemversion "latest"
-
-        defines
-        {
-            "BUILD_DLL"
-        }
-
-        postbuildcommands
-        {
-            ("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/Client")
-        }
-    
-    filter "configurations:Debug"
-        symbols "On"
-
-    filter "configurations:Release"
-        symbols "Off"
-
-project "Client"
-    location "Client"
-    kind "ConsoleApp"    
-    language "C++"
-
-    targetdir("bin/" .. outputdir .. "/%{prj.name}")
-    objdir("bin-int/" .. outputdir .. "/%{prj.name}")
-
-    files
-    {
-        "%{prj.name}/**.hpp",
-        "%{prj.name}/**.cpp"
-    }
-
-    includedirs
-    {
-        "DynLib/"
-    }
-
-    links
-    {
-        "DynLib"
-    }
-
-    filter "system:windows"
-        cppdialect "C++17"
-        staticruntime "On"
-        systemversion "latest"
-
-        defines
-        {
-            "LN_PLATFORM_WINDOWS",
-        }
-
-    filter "configurations:Debug"
-        symbols "On"
-
-    filter "configurations:Release"
-        symbols "Off"
+filter "configurations:Release"
+    defines {"NDEBUG"}
+    optimize "On"
 
